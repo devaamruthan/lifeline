@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Emergency Command</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0e1626;--bg2:#15203a;--line:#27365a;--ink:#e9eef7;--mut:#97a5bf;--cink:#16202f;--cmut:#5a687f;--crit:#e5383b;--high:#f77f00;--med:#f2c200;--low:#2a9d5c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif}
+h1,h2,h3{font-family:"Barlow Condensed","Arial Narrow",sans-serif;margin:0;line-height:1.05}
+h1{font-size:clamp(42px,8vw,80px)}h2{font-size:34px}h3{font-size:21px}
+header{position:sticky;top:0;z-index:1000;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;padding:10px 16px;flex-wrap:wrap}
+.logo{font:700 24px "Barlow Condensed",sans-serif;display:flex;align-items:center;gap:8px;margin-right:12px;cursor:pointer}
+.logo i{width:14px;height:14px;background:var(--crit);border-radius:50%;box-shadow:0 0 0 4px #e5383b44}
+nav{display:flex;gap:2px;flex-wrap:wrap;flex:1}
+button{font:600 15px Barlow,sans-serif;cursor:pointer}
+nav button{border:0;border-radius:6px;padding:8px 12px;background:none;color:var(--mut)}
+nav button:hover,nav button.on{color:var(--ink);background:var(--bg2)}
+.btn{border:1px solid var(--line);border-radius:8px;padding:10px 16px;background:var(--bg2);color:var(--ink)}
+.btn.r{background:var(--crit);border-color:var(--crit);color:#fff}.btn.g{background:var(--low);border-color:var(--low);color:#fff}
+.btn.w{background:#fff;color:var(--cink);border-color:#c9d2e2}
+.btn.lg{padding:15px 26px;font-size:18px}.btn[disabled]{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #7db0ff;outline-offset:2px}
+main{max-width:1180px;margin:0 auto;padding:22px 16px 70px}
+.card{background:#fff;color:var(--cink);border-radius:12px;padding:18px}
+.dk{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px}
+.mut{color:var(--mut)}.card .mut{color:var(--cmut)}
+.grid{display:grid;gap:14px}.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.stat b{display:block;font:700 46px "Barlow Condensed",sans-serif;line-height:1}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font:600 13px Barlow;color:#fff;white-space:nowrap}
+.CRITICAL{background:var(--crit)}.HIGH{background:var(--high)}.MEDIUM{background:var(--med);color:#222}.LOW{background:var(--low)}.st{background:#e6ebf4;color:#22304a}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;padding:34px 26px;background:linear-gradient(135deg,#17274a,#0e1626 65%);border:1px solid var(--line);border-radius:14px}
+@media(max-width:820px){.hero{grid-template-columns:1fr}}
+.hero p{font-size:19px;color:var(--mut);max-width:520px}
+.sos{display:flex;align-items:center;gap:14px;background:radial-gradient(circle at 30% 30%,#ff5a5d,#c1121f);color:#fff;border:0;border-radius:99px;padding:10px 26px 10px 10px;margin:18px 0;animation:sp 2s infinite}
+.sos b{width:78px;height:78px;border-radius:50%;background:#fff;color:#c1121f;display:grid;place-items:center;font:700 30px "Barlow Condensed"}
+.sos span{text-align:left;max-width:190px}
+@keyframes sp{0%{box-shadow:0 0 0 0 #e5383b99}70%{box-shadow:0 0 0 22px #e5383b00}}
+@media(prefers-reduced-motion:reduce){.sos{animation:none}}
+.tick{border-left:4px solid var(--crit);padding:10px 12px;background:var(--bg);border-radius:0 8px 8px 0;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.steps div{padding:16px;border-right:1px solid var(--line)}
+/* wizard */
+.wz{max-width:680px;margin:0 auto}
+.pg{display:flex;gap:5px;margin:0 0 22px}.pg span{flex:1;height:6px;border-radius:3px;background:var(--line)}.pg span.on{background:var(--crit)}
+.stepc{min-height:62vh;display:flex;flex-direction:column;justify-content:center;animation:up .3s}
+@keyframes up{from{opacity:0;transform:translateY(28px)}}
+@media(prefers-reduced-motion:reduce){.stepc{animation:none}}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:16px}
+.tp{background:var(--bg2);border:2px solid var(--line);color:var(--ink);border-radius:12px;padding:18px 8px;font-size:17px}
+.tp span{display:block;font-size:34px}.tp.on{border-color:var(--crit);background:#2a1c2c}
+.fl{display:flex;gap:10px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;cursor:pointer}
+.fl input{width:22px;height:22px;accent-color:var(--crit)}
+.cnt{display:flex;align-items:center;gap:16px;margin:12px 0}.cnt b{font:700 52px "Barlow Condensed";min-width:70px;text-align:center}
+.cnt button{width:54px;height:54px;border-radius:50%;font-size:26px}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+input,textarea{font:inherit;padding:12px;border:1px solid #c9d2e2;border-radius:8px;width:100%;background:#fff;color:var(--cink)}
+label.l{display:block;font-weight:600;margin:12px 0 4px}
+.gmap{display:block;width:100%;height:340px;border:0;border-radius:12px;background:#dce4ec}
+#cam{width:100%;border-radius:12px;background:#000;max-height:360px}
+.th{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.th div{position:relative}.th img{width:104px;height:78px;object-fit:cover;border-radius:8px;border:2px solid #fff}
+.th button{position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:0;background:var(--crit);color:#fff;padding:0}
+.rec{width:110px;height:110px;border-radius:50%;border:0;background:var(--crit);color:#fff;font-size:15px}.rec.on{animation:sp 1.2s infinite}
+.eta{background:#f2f5fa;border-left:4px solid #2d6cdf;border-radius:6px;padding:8px 10px;margin:6px 0}
+.tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid #c9d2e2}.tl li{margin:0 0 10px;padding-left:12px;position:relative}.tl li:before{content:"";position:absolute;left:-21px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--crit)}
+table{width:100%;border-collapse:collapse;font-size:14px}th{text-align:left;color:var(--cmut);padding:8px;border-bottom:2px solid #e3e8f1}td{padding:9px 8px;border-bottom:1px solid #edf0f6}.scroll{overflow-x:auto}
+.bar{height:10px;background:#e3e8f1;border-radius:5px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%}
+.ok{color:var(--low);font-weight:600}.err{color:var(--crit);font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lnk{color:#2d6cdf;font-weight:600}
+#toasts{position:fixed;right:14px;bottom:14px;z-index:2000;display:grid;gap:8px}.toast{background:#fff;color:var(--cink);border-left:5px solid var(--crit);padding:10px 14px;border-radius:8px;max-width:320px}
+</style>
+</head>
+<body>
+<header id="hd"></header>
+<main id="v"></main>
+<div id="toasts"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=d=>d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const TYPES={"Fire":{i:"🔥",b:30,v:["Fire"]},"Road Accident":{i:"🚗",b:20,v:["Ambulance","Police"]},"Medical Emergency":{i:"🩺",b:25,v:["Ambulance"]},"Crime":{i:"🚨",b:20,v:["Police"]},"Flood":{i:"🌊",b:25,v:["Rescue","Ambulance"]},"Building Collapse":{i:"🏚️",b:35,v:["Rescue","Ambulance"]},"Natural Disaster":{i:"🌪️",b:35,v:["Rescue","Ambulance"]},"Other":{i:"❓",b:10,v:["Police"]}};
+const FLAGS=[["trapped","Someone is trapped",15],["unresp","Someone is unconscious or not breathing",35],["bleed","Heavy bleeding",15],["hazard","Fire spreading, explosion or chemical risk",15],["weapon","Weapon or violence involved",15],["vuln","Children or elderly people are involved",5]];
+const VI={Fire:"🚒",Police:"🚓",Ambulance:"🚑",Rescue:"🛟"};
+const CENTER=[12.6819,79.9888];
+
+/* Priority engine: score 0-100 from type, people, danger signs and live evidence */
+function engine(d){const f=[];let s=TYPES[d.type].b;f.push(d.type+" (+"+s+")");
+const p=d.ppl>=10?20:d.ppl>=5?15:d.ppl>=2?10:5;s+=p;f.push(d.ppl+(d.ppl==1?" person":" people")+" affected (+"+p+")");
+FLAGS.forEach(([k,t,w])=>{if(d.flags.includes(k)){s+=w;f.push(t+" (+"+w+")")}});
+if(d.photos.length){s+=3;f.push("Live photos attached (+3)")}
+s=Math.min(100,s);return{score:s,priority:s>=80?"CRITICAL":s>=60?"HIGH":s>=35?"MEDIUM":"LOW",factors:f}}
+function need(d){const s=new Set(TYPES[d.type].v);if(d.flags.includes("unresp")||d.flags.includes("bleed"))s.add("Ambulance");if(d.flags.includes("hazard"))s.add("Fire");if(d.flags.includes("weapon"))s.add("Police");if(d.flags.includes("trapped"))s.add("Rescue");return[...s]}
+
+const INC=[];const S={view:"home",track:"",fresh:false,vi:0,sel:""};
+let W,stream=null,rec=null,chunks=[];
+const blank=()=>({step:0,type:"",ppl:1,flags:[],lat:null,lng:null,landmark:"",photos:[],voice:null,desc:"",name:"",phone:""});W=blank();
+const active=i=>i.status!="RESOLVED";const get=id=>INC.find(i=>i.id==id);
+const pill=p=>`<span class="pill ${p}">${p}</span>`;const stp=s=>`<span class="pill st">${s.replace("_"," ")}</span>`;
+function km(a,b,c,d){const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 12742*Math.asin(Math.sqrt(h))}
+function toast(m){const t=document.createElement("div");t.className="toast";t.innerHTML=m;$("#toasts").appendChild(t);setTimeout(()=>t.remove(),4500)}
+const gm=i=>"https://www.google.com/maps?q="+i.lat+","+i.lng;
+const pos=v=>[v.sLat+(v.i.lat-v.sLat)*v.p,v.sLng+(v.i.lng-v.sLng)*v.p];
+
+function hdr(){const it=[["home","Home"],["report","Report Emergency"],["track","Track"],["ops","Control Room"]];
+$("#hd").innerHTML=`<div class="logo" data-go="home"><i></i>Emergency Command</div><nav>${it.map(a=>`<button class="${S.view==a[0]?"on":""}" data-go="${a[0]}">${a[1]}</button>`).join("")}</nav><button class="btn r" data-go="report">REPORT EMERGENCY</button>`}
+
+function home(){const a=INC.filter(active),veh=a.flatMap(i=>i.veh).filter(v=>v.p<1);
+return `<section class="hero"><div><h1>Help is one tap away.</h1><p>Answer a few quick questions, pin the exact spot, take live photos, or just record your voice. The nearest vehicles are sent and you can watch them arrive.</p>
+<button class="sos" data-go="report"><b>SOS</b><span>Start an emergency report now</span></button><button class="btn lg" data-go="track">Track an incident</button></div>
+<div class="dk"><h3>Active incidents</h3><p class="mut">Updated live</p>${a.slice(0,4).map(i=>`<div class="tick"><div><b>${i.id} ${esc(i.type)}</b><br>${i.ppl} affected · ${i.veh.length} vehicles</div>${pill(i.priority)}</div>`).join("")||"<p>No active incidents right now.</p>"}</div></section>
+<section class="grid g4" style="margin-top:14px"><div class="dk stat"><b>${a.length}</b>Active incidents</div><div class="dk stat"><b>${veh.length}</b>Vehicles on the road</div><div class="dk stat"><b>${INC.length-a.length}</b>Resolved</div></section>
+<h2 style="margin:40px 0 14px">How it works</h2><div class="steps">${[["Report","Six short steps, one question at a time."],["Locate","You pin the exact incident spot on the map."],["Verify","Only live camera photos are accepted, stamped with time and place."],["Prioritize","A 0 to 100 score is built from type, people and danger signs."],["Dispatch","The right vehicles leave at once and you track them live."]].map(s=>`<div><h3>${s[0]}</h3><p class="mut">${s[1]}</p></div>`).join("")}</div>`}
+
+/* ---------- report wizard ---------- */
+const STEPS=["Type","Situation","Location","Photos","Voice","Contact"];
+function okStep(){const s=W.step;return s==0?!!W.type:s==2?W.lat!=null:s==5?W.name.trim()&&W.phone.replace(/\D/g,"").length>=10:true}
+function thumbs(){return W.photos.map((p,k)=>`<div><img src="${p.src}" alt="Live photo ${k+1}"><button data-a="del" data-k="${k}" aria-label="Remove photo">×</button></div>`).join("")}
+function rep(){const s=W.step;let b="";
+if(s==0)b=`<h2>What is happening?</h2><p class="mut">Choose the closest match.</p><div class="types">${Object.keys(TYPES).map(t=>`<button class="tp ${W.type==t?"on":""}" data-a="type" data-k="${t}"><span>${TYPES[t].i}</span>${t}</button>`).join("")}</div>`;
+if(s==1)b=`<h2>How serious is it?</h2><p class="mut">How many people are affected?</p><div class="cnt"><button class="btn" data-a="ppl" data-k="-1" aria-label="Fewer">−</button><b id="pc">${W.ppl}</b><button class="btn" data-a="ppl" data-k="1" aria-label="More">+</button></div><p class="mut">Tick anything that applies.</p>${FLAGS.map(f=>`<label class="fl"><input type="checkbox" data-f="${f[0]}" ${W.flags.includes(f[0])?"checked":""}>${f[1]}</label>`).join("")}`;
+if(s==2)b=`<h2>Where is it?</h2><p class="mut">We start with your current location. If the incident is somewhere else, paste its coordinates below.</p><iframe id="gf" class="gmap" title="Google Maps" loading="lazy"></iframe><div class="row" style="margin-top:10px"><button class="btn r" data-a="gps">📍 Use my current location</button></div><p id="lc" class="mut"></p><label class="l">Incident is elsewhere? Paste coordinates</label><div class="row"><input id="co" placeholder="12.6819, 79.9888" style="flex:1"><button class="btn w" data-a="coord">Set</button></div><p class="mut" style="margin:6px 0"><a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/maps">Open Google Maps</a>, right-click the spot and tap the numbers to copy them.</p><input data-i="landmark" placeholder="Landmark or street (optional)" value="${esc(W.landmark)}">`;
+if(s==3)b=`<h2>Take live photos</h2><p class="mut">Photos can only be taken here and now with your camera. Each one is stamped with the time and the pinned location. Up to 4.</p><video id="cam" autoplay playsinline muted></video><p id="cerr" class="err"></p><div class="row"><button class="btn r" data-a="snap">📷 Take photo</button></div><div class="th" id="th">${thumbs()}</div>`;
+if(s==4)b=`<h2>Add your voice <span class="mut" style="font-size:20px">(optional)</span></h2><p class="mut">If it is hard to speak or type, record a short message instead. Up to 60 seconds.</p><div class="row" style="gap:18px"><button class="rec" id="rb" data-a="rec">● Record</button><div id="au">${W.voice?`<audio controls src="${W.voice}"></audio><br><button class="btn" data-a="delv">Remove recording</button>`:"<span class=mut>No recording yet.</span>"}</div></div><label class="l">Or describe it in words (optional)</label><textarea rows="3" data-i="desc" placeholder="What can you see?">${esc(W.desc)}</textarea>`;
+if(s==5){const e=engine(W);b=`<h2>Who is reporting?</h2><p class="mut">So responders can call you back. No sign-up needed.</p><label class="l">Your name</label><input data-i="name" value="${esc(W.name)}"><label class="l">Mobile number</label><input data-i="phone" inputmode="tel" placeholder="98400 12345" value="${esc(W.phone)}">
+<div class="dk" style="margin-top:18px"><h3>Estimated priority</h3><p>${pill(e.priority)} score ${e.score}/100</p><p class="mut">${e.factors.join(" · ")}</p><p class="mut">Vehicles to send: ${need(W).map(t=>VI[t]+" "+t).join(", ")}</p></div>`}
+return `<div class="wz"><div class="pg">${STEPS.map((x,k)=>`<span class="${k<=s?"on":""}" title="${x}"></span>`).join("")}</div><div class="stepc">${b}</div><div class="nav"><button class="btn" data-a="back" ${s==0?"disabled":""}>Back</button>${s==5?`<button class="btn r lg" id="nx" data-a="send" ${okStep()?"":"disabled"}>SEND EMERGENCY</button>`:`<button class="btn r lg" id="nx" data-a="next" ${okStep()?"":"disabled"}>${s==4?"Next":s==3&&!W.photos.length?"Skip":"Next"}</button>`}</div></div>`}
+
+const gE=q=>"https://maps.google.com/maps?q="+q+"&z=16&output=embed";
+const gR=(a,b)=>"https://maps.google.com/maps?saddr="+a+"&daddr="+b+"&output=embed";
+function setPin(la,lo){W.lat=la;W.lng=lo;$("#lc").innerHTML=`📍 ${la.toFixed(5)}, ${lo.toFixed(5)} · <a class="lnk" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${la},${lo}">Open in Google Maps</a>`;$("#gf").src=gE(la+","+lo);$("#nx").disabled=!okStep()}
+function initPick(){if(W.lat!=null)setPin(W.lat,W.lng);else{$("#gf").src=gE(CENTER.join(","));gps()}}
+function gps(){if(!navigator.geolocation)return toast("GPS is not supported on this browser.");
+navigator.geolocation.getCurrentPosition(p=>setPin(p.coords.latitude,p.coords.longitude),e=>toast("Could not get GPS: "+esc(e.message)+". Paste coordinates instead."),{enableHighAccuracy:true,timeout:15000})}
+function coord(){const m=$("#co").value.match(/(-?\d+(?:\.\d+)?)\s*[, ]\s*(-?\d+(?:\.\d+)?)/);if(!m||Math.abs(+m[1])>90||Math.abs(+m[2])>180)return toast("Enter coordinates like 12.6819, 79.9888");setPin(+m[1],+m[2])}
+async function startCam(){const v=$("#cam");try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});v.srcObject=stream}catch(e){$("#cerr").textContent="Camera unavailable ("+e.message+"). Allow camera access and reload, or skip this step."}}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}
+function snap(){const v=$("#cam");if(!v||!v.videoWidth)return toast("Camera is not ready yet.");if(W.photos.length>=4)return toast("You can add up to 4 photos.");
+const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext("2d");x.drawImage(v,0,0);
+const t=new Date().toLocaleString()+" · "+W.lat.toFixed(5)+", "+W.lng.toFixed(5),h=Math.max(26,c.height/18);x.fillStyle="#000b";x.fillRect(0,c.height-h,c.width,h);x.fillStyle="#fff";x.font=(h*.55)+"px sans-serif";x.fillText("LIVE · "+t,10,c.height-h*.3);
+W.photos.push({src:c.toDataURL("image/jpeg",.7),t:Date.now()});$("#th").innerHTML=thumbs()}
+async function recToggle(){const b=$("#rb");if(rec&&rec.state=="recording")return rec.stop();
+try{const s=await navigator.mediaDevices.getUserMedia({audio:true});rec=new MediaRecorder(s);chunks=[];rec.ondataavailable=e=>chunks.push(e.data);
+rec.onstop=()=>{s.getTracks().forEach(t=>t.stop());W.voice=URL.createObjectURL(new Blob(chunks,{type:rec.mimeType}));render()};
+rec.start();b.classList.add("on");b.textContent="■ Stop";setTimeout(()=>rec&&rec.state=="recording"&&rec.stop(),60000)}catch(e){toast("Microphone unavailable: "+esc(e.message))}}
+
+function send(){const e=engine(W),id="INC-"+(1001+INC.length),t=TYPES[W.type];
+const i={id,type:W.type,ppl:W.ppl,lat:W.lat,lng:W.lng,landmark:W.landmark,desc:W.desc,by:W.name,phone:W.phone,photos:W.photos,voice:W.voice,created:new Date(),status:"DISPATCHED",tl:[],veh:[],...e};
+i.tl.push({t:new Date(),x:"Report received with "+i.photos.length+" live photo(s)"+(i.voice?" and a voice message":"")},{t:new Date(),x:"Priority "+i.priority+" (score "+i.score+")"});
+need(W).forEach((ty,k)=>{const dist=(i.priority=="CRITICAL"?2:3)+Math.random()*3,a=Math.random()*6.28,dur=40+Math.random()*30;
+const v={i,name:ty+" Unit "+(10+Math.floor(Math.random()*80)),ty,dist,sLat:i.lat+Math.sin(a)*dist/111,sLng:i.lng+Math.cos(a)*dist/(111*Math.cos(i.lat*Math.PI/180)),p:0,dur,st:"EN_ROUTE"};i.veh.push(v);i.tl.push({t:new Date(),x:v.name+" dispatched"})});
+INC.unshift(i);S.track=id;S.fresh=true;S.vi=0;W=blank();go("track")}
+
+setInterval(()=>{let ch=false;INC.filter(active).forEach(i=>{i.veh.forEach(v=>{if(v.p<1){v.p=Math.min(1,v.p+1/v.dur);ch=true;if(v.p>=1){v.st="ARRIVED";i.tl.push({t:new Date(),x:v.name+" arrived on scene"});if(i.veh.every(q=>q.p>=1)){i.status="ON_SCENE";i.tl.push({t:new Date(),x:"All vehicles on scene"});toast("🚨 "+i.id+": all vehicles on scene")}}}})});
+if(ch)live()},1000);
+
+/* ---------- live tracking ---------- */
+const etaMin=v=>Math.max(0,Math.ceil(v.dist*(1-v.p)/40*60));
+function vlist(i){return i.veh.map(v=>`<div class="eta"><b>${VI[v.ty]} ${esc(v.name)}</b> ${v.p>=1?'<span class="ok">Arrived</span>':"· ETA about "+etaMin(v)+" min · "+(v.dist*(1-v.p)).toFixed(1)+" km away"}<div class="bar"><i style="width:${v.p*100}%;background:#2d6cdf"></i></div></div>`).join("")}
+function trk(){const i=get(S.track.toUpperCase());
+const form=`<form id="tf" class="row" style="margin-bottom:14px"><input name="id" placeholder="INC-1001" value="${esc(S.track)}" style="flex:1"><button class="btn r">Track</button></form>`;
+if(!i)return `<div class="card" style="max-width:720px;margin:auto"><h2>Track an incident</h2>${form}${S.track?`<p class="err">No incident found with that ID.</p>`:`<p class="mut">Enter the ID from your report.</p>`}</div>`;
+const f=S.fresh;S.fresh=false;
+return `<div class="grid g2"><div class="card">${f?`<p class="ok" style="font-size:20px;margin:0 0 6px">Emergency reported. Help is on the way.</p>`:""}<h2>${i.id} · ${esc(i.type)}</h2><p id="ts">${pill(i.priority)} <b>Score ${i.score}</b> ${stp(i.status)}</p><p class="mut">Why: ${i.factors.join(" · ")}</p>
+<p>${i.landmark?"Near "+esc(i.landmark)+" · ":""}<a class="lnk" target="_blank" rel="noopener" href="${gm(i)}">Open in Google Maps</a></p>
+<div id="vl">${vlist(i)}</div><h3 style="margin-top:14px">Timeline</h3><ul class="tl" id="tl" style="margin-top:10px">${tlist(i)}</ul>
+${i.desc?`<p><b>Description:</b> ${esc(i.desc)}</p>`:""}${i.voice?`<p><b>Voice message</b><br><audio controls src="${i.voice}"></audio></p>`:""}${i.photos.length?`<h3>Live photos</h3><div class="th">${i.photos.map(p=>`<div><img src="${p.src}" alt="Live photo"></div>`).join("")}</div>`:""}</div>
+<div><div class="row" id="vt" style="margin-bottom:8px">${tabs(i)}</div><iframe id="lm" class="gmap" style="height:480px" title="Google Maps route"></iframe><p class="mut">Google Map shows the route from the selected vehicle to the incident and refreshes every few seconds. Vehicle movement is simulated at demo speed.</p></div></div>
+<div class="card" style="margin-top:14px"><h3>Track another</h3>${form}</div>`}
+const tabs=i=>i.veh.map((v,k)=>`<button class="btn ${k==S.vi?"r":"w"}" data-a="veh" data-k="${k}">${VI[v.ty]} ${esc(v.name)}</button>`).join("");
+const tlist=i=>i.tl.map(t=>`<li><b>${fmt(t.t)}</b> · ${esc(t.x)}</li>`).join("");
+
+function rows(){return INC.slice().sort((a,b)=>(active(b)-active(a))||b.score-a.score).map(i=>`<tr><td><b>${i.id}</b></td><td>${esc(i.type)}</td><td>${pill(i.priority)} ${i.score}</td><td>${stp(i.status)}</td><td>${i.ppl}</td><td>${i.photos.length}${i.voice?" 🎤":""}</td><td>${i.veh.map(v=>VI[v.ty]+(v.p>=1?"✓":etaMin(v)+"m")).join(" ")}</td><td><button class="btn w" data-a="show" data-k="${i.id}">Map</button> <button class="btn w" data-a="open" data-k="${i.id}">Open</button> ${active(i)?`<button class="btn g" data-a="res" data-k="${i.id}">Resolve</button>`:""}</td></tr>`).join("")||`<tr><td colspan="8" class="mut">No incidents yet. Reports appear here, highest priority first.</td></tr>`}
+function stats(){const a=INC.filter(active),v=a.flatMap(i=>i.veh);return `<div class="card stat"><b>${a.length}</b>Active incidents</div><div class="card stat"><b style="color:var(--crit)">${a.filter(i=>i.priority=="CRITICAL").length}</b>Critical</div><div class="card stat"><b>${v.filter(x=>x.p<1).length}</b>Vehicles en route</div><div class="card stat"><b>${v.filter(x=>x.p>=1).length}</b>On scene</div>`}
+function ops(){return `<h2 style="margin-bottom:12px">Control room</h2><div class="grid g4" id="sts">${stats()}</div><iframe id="lm" class="gmap" style="height:420px;margin-top:14px" title="Google Maps incident"></iframe><div class="card" style="margin-top:14px"><h3>Incident queue</h3><div class="scroll"><table><thead><tr><th>ID</th><th>Type</th><th>Priority</th><th>Status</th><th>People</th><th>Evidence</th><th>Vehicles</th><th></th></tr></thead><tbody id="qb">${rows()}</tbody></table></div></div>`}
+
+let lastT=0;
+function mapUpdate(force){const f=$("#lm");if(!f)return;let src;
+if(S.view=="track"){const i=get(S.track.toUpperCase());if(!i)return;const v=i.veh[S.vi]||i.veh[0];src=v&&v.p<1?gR(pos(v).map(x=>x.toFixed(5)).join(","),i.lat+","+i.lng):gE(i.lat+","+i.lng)}
+else{const i=get(S.sel)||INC.filter(active).sort((a,b)=>b.score-a.score)[0];src=i?gE(i.lat+","+i.lng):gE(CENTER.join(","))}
+if(f.dataset.s==src)return;if(!force&&Date.now()-lastT<8000)return;lastT=Date.now();f.dataset.s=src;f.src=src}
+function live(){mapUpdate(false);
+if(S.view=="track"){const i=get(S.track.toUpperCase());if(i&&$("#vl")){$("#vl").innerHTML=vlist(i);$("#tl").innerHTML=tlist(i);$("#ts").innerHTML=`${pill(i.priority)} <b>Score ${i.score}</b> ${stp(i.status)}`}}
+if(S.view=="ops"){$("#qb").innerHTML=rows();$("#sts").innerHTML=stats()}}
+
+function render(){if(S.view!="report"||W.step!=3)stopCam();hdr();
+$("#v").innerHTML=({home,report:rep,track:trk,ops})[S.view]();
+if(S.view=="report"){if(W.step==2)initPick();if(W.step==3)startCam()}if(S.view=="track"||S.view=="ops")mapUpdate(true)}
+function go(v){S.view=v;render();window.scrollTo(0,0)}
+
+document.addEventListener("click",e=>{const g=e.target.closest("[data-go]");if(g){if(g.dataset.go=="report"&&S.view!="report")W=blank();return go(g.dataset.go)}
+const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a,k=b.dataset.k;
+if(a=="type"){W.type=k;render()}
+else if(a=="ppl"){W.ppl=Math.max(0,Math.min(500,W.ppl+ +k));$("#pc").textContent=W.ppl}
+else if(a=="next"){W.step++;render();window.scrollTo(0,0)}
+else if(a=="back"){W.step--;render();window.scrollTo(0,0)}
+else if(a=="gps")gps();else if(a=="snap")snap();
+else if(a=="del"){W.photos.splice(+k,1);$("#th").innerHTML=thumbs()}
+else if(a=="rec")recToggle();else if(a=="delv"){W.voice=null;render()}
+else if(a=="send")send();
+else if(a=="coord")coord();
+else if(a=="veh"){S.vi=+k;$("#vt").innerHTML=tabs(get(S.track.toUpperCase()));mapUpdate(true)}
+else if(a=="show"){S.sel=k;mapUpdate(true);$("#lm").scrollIntoView({block:"center"})}
+else if(a=="open"){S.vi=0;S.track=k;go("track")}
+else if(a=="res"){const i=get(k);i.status="RESOLVED";i.veh.forEach(v=>v.p=1);i.tl.push({t:new Date(),x:"Incident resolved"});render()}});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset.i){W[t.dataset.i]=t.value;const n=$("#nx");if(n)n.disabled=!okStep()}});
+document.addEventListener("change",e=>{const t=e.target;if(t.dataset.f){const f=t.dataset.f;W.flags=t.checked?W.flags.concat(f):W.flags.filter(x=>x!=f)}});
+document.addEventListener("submit",e=>{e.preventDefault();if(e.target.id=="tf"){S.track=e.target.elements.id.value.trim();render()}});
+render();
+</script>
+</body>
+</html>
